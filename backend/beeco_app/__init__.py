@@ -1,1 +1,2 @@
-default_app_config = 'beeco_app.apps.BeecoAppConfig'
+default_app_config = 'beeco_app'
+

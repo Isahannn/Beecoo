@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from backend.beeco_app.post.models.post import Post
-from .models import Follow, Friendship
+from backend.beeco_app.models.Post import Post
+from .models.social import Follow, Friendship
 
 
 @receiver(post_save, sender=Post)
