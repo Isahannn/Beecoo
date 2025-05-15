@@ -1,0 +1,8 @@
+Django>=3.2,<5.0
+django-polymorphic
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+channels
+Pillow
+psycopg2-binary

@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: beeco_db
+      POSTGRES_USER: beeco_user
+      POSTGRES_PASSWORD: beeco_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beeco_user"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "5432:5432"
+    environment:
+      - DATABASE_URL=postgres://beeco_user:beeco_pass@db:5432/beeco_db
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
