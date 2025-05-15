@@ -1,0 +1,129 @@
+:root {
+  --color-text: #5a4b00;       /* темно-коричневато-желтый */
+  --color-muted: #bbaa33;      /* приглушенный желтый */
+  --color-primary: #f2c94c;    /* ярко-желтый / золотой */
+}
+
+/* остальные стили без изменений */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #fff9e6;
+  color: var(--color-text);
+  margin: 0;
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  font-family: "Euclid Circular A", "Poppins";
+  overflow: hidden;
+}
+
+.card {
+  background: #fffbe6;
+  border-radius: 30px;
+  width: 65%;
+  max-width: 800px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 580px 100px rgb(242 201 76 / 10%);
+}
+
+.content {
+  flex: 1 1 50%;
+  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+}
+
+h2 {
+  font-weight: 400;
+  font-size: 18px;
+  margin: 0 0 40px;
+  color: var(--color-muted);
+}
+
+form {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+label {
+  color: var(--color-muted);
+}
+
+input,
+button {
+  font-size: 16px;
+  font-family: inherit;
+  padding: 0 16px;
+  width: 100%;
+  height: 60px;
+  border: 0;
+  border-radius: 8px;
+}
+
+.textbox {
+  position: relative;
+}
+
+label,
+input {
+  transition: 0.3s;
+}
+
+.textbox label {
+  position: absolute;
+  top: 70%;
+  left: 16px;
+  translate: 0 -50%;
+  transform-origin: 0 50%;
+  pointer-events: none;
+  color: var(--color-muted);
+}
+
+.textbox input {
+
+  background: #fff8db;
+  outline: none;
+  color: inherit;
+  box-shadow: 0 0 0 2px transparent;
+}
+
+.textbox input:focus {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.textbox input:is(:focus, :not(:invalid)) ~ label {
+  scale: 0.725;
+  translate: 0 -40%;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: #fff9db;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:disabled {
+  background: #f9e89a;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #c47a00;
+  margin-bottom: 12px;
+  font-weight: 600;
+  text-align: center;
+}

@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider, Link,Outlet } from 'react-router-d
 import './App.css';
 import { AuthProvider } from './Context';
 import Registration from './components/Auth/Registration/Registration';
+import LogIn from './components/Auth/Login/LogIn.jsx';
 
 const Layout = () => (
   <div className="layout">
@@ -22,15 +23,7 @@ const Layout = () => (
   </div>
 );
 
-// Пример компонента LogIn
-const LogIn = () => (
-  <div className="login-container">
-    <h2>Login</h2>
-    <input type="text" placeholder="Username" />
-    <input type="password" placeholder="Password" />
-    <button>Log In</button>
-  </div>
-);
+
 
 const router = createBrowserRouter([
   {

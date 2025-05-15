@@ -4,6 +4,7 @@ import {validationSchema} from '../../../../Validation/validation.jsx';
 import {Link} from 'react-router-dom';
 import TextInput from '../TextInput';
 import PasswordInput from '../PasswordInput';
+import GoogleLoginButton from '../../GoogleAuth/GoogleLoginButton.jsx';
 import './RegistrationForm.css';
 
 const RegistrationForm = () => {
@@ -51,8 +52,6 @@ const RegistrationForm = () => {
                 last_name: formData.last_name,
             });
             console.log('User created with ID:', response.data.id);
-            // Если у тебя есть useState для userId — обнови его
-            // setUserId(response.data.id);
             localStorage.setItem('userId', response.data.id);
 
             setMessage('Registration successful! Redirecting...');
@@ -100,7 +99,7 @@ const RegistrationForm = () => {
     return (
         <div className="registration-form-container">
             <form onSubmit={handleSubmit} className="registration-form">
-                <h2>Register</h2>
+                <h2>Registration</h2>
 
                 {message && (
                     <div className={`message ${isSuccess ? 'success' : 'error'}`}>
@@ -167,7 +166,7 @@ const RegistrationForm = () => {
                     required
                     autoComplete="new-password"
                 />
-
+          <GoogleLoginButton />
                 <button
                     type="submit"
                     disabled={isLoading}
@@ -177,7 +176,7 @@ const RegistrationForm = () => {
                         <>
                             <span className="spinner"></span> Processing...
                         </>
-                    ) : 'Register'}
+                    ) : 'Sign up'}
                 </button>
 
                 <div className="login-link">
