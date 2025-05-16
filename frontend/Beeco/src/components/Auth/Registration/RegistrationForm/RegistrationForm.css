@@ -1,7 +1,12 @@
 :root {
-  --color-text: #3c3849;
-  --color-muted: #adabb4;
-  --color-primary: #8a6bf1;
+  --color-text: #494538;
+  --color-muted: #9e9b8f;
+  --color-primary: #f0d42f;
+  --color-primary-light: #fff07a;
+  --color-background: #f9f8ff;
+  --color-input-bg: #f6f6fb;
+  --color-error: #dc3545;
+  --color-success: #28a745;
 }
 
 * {
@@ -9,37 +14,55 @@
 }
 
 body {
-  background: #ebe8ff;
+  background: url('/images/Background.jpg') no-repeat center center fixed;
+  background-size: cover;
   color: var(--color-text);
   margin: 0;
   display: grid;
   place-items: center;
   height: 100vh;
   font-family: "Euclid Circular A", "Poppins", sans-serif;
+  position: relative;
+  will-change: background-color, box-shadow;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+
+  z-index: 0;
+  pointer-events: none;
+}
 .registration-form-container {
+  position: relative;
   width: 130%;
+  max-width: 700px;
+  padding: 20px;
+  z-index: 1;
   display: flex;
   justify-content: center;
-  padding: 20px;
 }
 
 .registration-form {
-  background: #ffffff;
+  background: white;
   border-radius: 30px;
   width: 100%;
-  max-width: 500px;
   padding: 40px;
-  box-shadow: 0 10px 30px rgba(104, 101, 248, 0.1);
+  box-shadow: 0 8px 20px rgba(240, 212, 47, 0.25);
+  transition: box-shadow 0.3s ease;
+}
+
+.registration-form:hover {
+  box-shadow: 0 12px 30px rgba(240, 212, 47, 0.35);
 }
 
 .registration-form h2 {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0 0 30px;
+  color: #1a1a1a;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
   text-align: center;
-  color: var(--color-text);
 }
 
 .message {
@@ -52,12 +75,12 @@ body {
 
 .message.success {
   background-color: #e6f7ee;
-  color: #28a745;
+  color: var(--color-success);
 }
 
 .message.error {
   background-color: #fde8e8;
-  color: #dc3545;
+  color: var(--color-error);
 }
 
 .textbox {
@@ -74,6 +97,7 @@ body {
   pointer-events: none;
   color: var(--color-muted);
   transition: all 0.3s ease;
+  user-select: none;
 }
 
 .textbox input {
@@ -81,26 +105,28 @@ body {
   height: 60px;
   padding: 16px;
   font-size: 16px;
-  border: 1px solid #f6f6fb;
+  border: 1px solid #f5e68d;
   border-radius: 8px;
-  background: #f6f6fb;
+  background: var(--color-input-bg);
   outline: none;
   color: var(--color-text);
   transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .textbox input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(138, 107, 241, 0.2);
+  box-shadow: 0 0 6px var(--color-primary-light);
 }
 
 .textbox input:is(:focus, :not(:placeholder-shown)) + label {
   transform: translateY(-180%) scale(0.8);
   color: var(--color-primary);
+  font-weight: 600;
 }
 
 .error {
-  color: #dc3545;
+  color: var(--color-error);
   font-size: 14px;
   margin-top: 5px;
   margin-bottom: 10px;
@@ -113,18 +139,20 @@ button[type="submit"] {
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
   margin-top: 10px;
+  box-shadow: 0 5px 15px rgba(240, 212, 47, 0.4);
 }
 
 button[type="submit"]:hover {
-  background: #7a5be0;
+  background: var(--color-primary-light);
+  box-shadow: 0 8px 25px rgba(255, 240, 120, 0.7);
 }
 
 button[type="submit"].loading {
@@ -151,12 +179,13 @@ button[type="submit"].loading {
   text-align: center;
   margin-top: 20px;
   color: var(--color-muted);
+  font-weight: 500;
 }
 
 .login-link a {
   color: var(--color-primary);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .login-link a:hover {

@@ -41,7 +41,6 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True, db_index=True)
     first_name = models.CharField(_('first name'), max_length=100)
     last_name = models.CharField(_('last name'), max_length=100)
-    location = models.CharField(_('location'), max_length=30, blank=True)
     date_of_birth = models.DateField(_('date of birth'), null=True, blank=True)
     avatar = models.ImageField(_('avatar'), upload_to='avatars/', null=True, blank=True, help_text=_('Profile picture'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now, db_index=True)

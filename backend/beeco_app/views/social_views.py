@@ -51,7 +51,7 @@ class FollowersListView(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = UserPagination
     filter_backends = [SearchFilter]
-    search_fields = ['username', 'email']
+    search_fields = ['first_name', 'email']
 
     def get(self, request):
         followers = request.user.followers.all()
@@ -66,7 +66,7 @@ class FollowingListView(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = UserPagination
     filter_backends = [SearchFilter]
-    search_fields = ['username', 'email']
+    search_fields = ['first_name', 'email']
 
     def get(self, request):
         following = request.user.following.all()

@@ -1,46 +1,87 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import { useState, useEffect, memo } from 'react';
 import { useAuth } from '../../../Context';
 import { useNavigate } from 'react-router-dom';
-import LoginForm from './LoginForm/LoginForm';
-import API_URL from '../../../config.jsx';
 
-const LogIn = () => {
+function LogIn() {
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async (identifier, password) => {
-    setLoading(true);
+  console.log('LogIn component rendered');
+
+  useEffect(() => {
+    console.log('LogIn: Mounted');
+    return () => console.log('LogIn: Unmounted');
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('LogIn: User is authenticated, redirecting to /');
+      navigate('/home');
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError('');
+    if (!identifier || !password) {
+      setError('Пожалуйста, введите email и пароль');
+      return;
+    }
+    console.log('LogIn: Sending login request with', { email: identifier, password });
 
     try {
-      const queryParam = identifier.includes('@') ? `email=${identifier}` : `username=${identifier}`;
-      const response = await axios.get(`${API_URL}/users?${queryParam}`);
-
-      const users = response.data;
-
-      const user = users.find((u) => {
-        return bcrypt.compareSync(password, u.password);
-      });
-
-      if (user) {
-        console.log('User logged in:', user);
-        login(user);
-        navigate('/home');
+      const success = await login(identifier, password);
+      console.log('LogIn: Login request completed, success=', success);
+      if (success) {
+        navigate('/');
       } else {
-        setError('Неправильное имя или email');
+        setError('Неверный email или пароль');
       }
-    } catch (err) {
-      console.error('Login error:', err);
-      setError(err.response?.data?.message || 'An unexpected error occurred.');
-    } finally {
-      setLoading(false);
+    } catch (e) {
+      console.error('LogIn: Login error:', {
+        message: e.message,
+        status: e.response?.status,
+        data: e.response?.data,
+      });
+      setError(`Ошибка входа: ${e.response?.data?.error || 'Проверьте данные'}`);
     }
   };
 
-  return <LoginForm onSubmit={handleLogin} loading={loading} error={error} />;
-};
+  return (
+    <div className="registration-form-container">
+      <form className="registration-form" onSubmit={handleSubmit}>
+        <h2>Вход</h2>
+        {error && <div className="message error">{error}</div>}
+        <div className="textbox">
+          <input
+            type="email"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value.trim())}
+            placeholder=" "
+            required
+          />
+          <label>Email</label>
+        </div>
+        <div className="textbox">
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder=" "
+            required
+          />
+          <label>Пароль</label>
+        </div>
+        <button type="submit">Войти</button>
+        <div className="login-link">
+          Нет аккаунта? <a href="/register">Зарегистрироваться</a>
+        </div>
+      </form>
+    </div>
+  );
+}
 
-export default LogIn;
+export default memo(LogIn);

@@ -1,129 +1,218 @@
 :root {
-  --color-text: #5a4b00;       /* темно-коричневато-желтый */
-  --color-muted: #bbaa33;      /* приглушенный желтый */
-  --color-primary: #f2c94c;    /* ярко-желтый / золотой */
+    --color-text: #494538;
+    --color-muted: #adabb4;
+    --color-primary: #e0ef0e;
+    --color-background: #fffde8;
+    --color-input-bg: #fefeea;
+    --color-error: #dc3545;
 }
 
-/* остальные стили без изменений */
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-body {
-  background: #fff9e6;
-  color: var(--color-text);
-  margin: 0;
-  display: grid;
-  place-items: center;
-  height: 100vh;
-  font-family: "Euclid Circular A", "Poppins";
-  overflow: hidden;
+.login-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100vw;
+    height: 100vh;
+    background: url('/images/Background.jpg') no-repeat center center;
+    background-size: cover;
+    background-position: center;
+    transition: background-position 0.3s ease; /* чуть плавнее */
+    /* убрал will-change для оптимизации */
 }
 
-.card {
-  background: #fffbe6;
-  border-radius: 30px;
-  width: 65%;
-  max-width: 800px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 580px 100px rgb(242 201 76 / 10%);
+.login-form {
+    background: #ffffff;
+    border-radius: 30px;
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(240, 228, 83, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.content {
-  flex: 1 1 50%;
-  padding: 0 20px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: left;
+.login-form h2 {
+    color: #1a1a1a;
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 30px;
+    text-align: center;
 }
 
-h2 {
-  font-weight: 400;
-  font-size: 18px;
-  margin: 0 0 40px;
-  color: var(--color-muted);
-}
-
-form {
-  display: grid;
-  gap: 12px;
-  width: 100%;
-}
-
-label {
-  color: var(--color-muted);
-}
-
-input,
-button {
-  font-size: 16px;
-  font-family: inherit;
-  padding: 0 16px;
-  width: 100%;
-  height: 60px;
-  border: 0;
-  border-radius: 8px;
+.message.error {
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #fff0f0;
+    color: var(--color-error);
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .textbox {
-  position: relative;
-}
-
-label,
-input {
-  transition: 0.3s;
-}
-
-.textbox label {
-  position: absolute;
-  top: 70%;
-  left: 16px;
-  translate: 0 -50%;
-  transform-origin: 0 50%;
-  pointer-events: none;
-  color: var(--color-muted);
+    position: relative;
+    margin-bottom: 20px;
 }
 
 .textbox input {
-
-  background: #fff8db;
-  outline: none;
-  color: inherit;
-  box-shadow: 0 0 0 2px transparent;
+     color: #1a1a1a;
+    width: 100%;
+    height: 60px;
+    padding: 16px;
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 16px;
+    border: 1px solid #f6f6f6;
+    border-radius: 8px;
+    background: var(--color-input-bg);
+    outline: none;
+    color: var(--color-text);
+    transition: all 0.3s ease;
 }
 
 .textbox input:focus {
-  box-shadow: 0 0 0 2px var(--color-primary);
+    color: #1a1a1a;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(224, 239, 14, 0.3);
 }
 
-.textbox input:is(:focus, :not(:invalid)) ~ label {
-  scale: 0.725;
-  translate: 0 -40%;
+.textbox label {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    transform-origin: 0 50%;
+    pointer-events: none;
+    color: var(--color-muted);
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    user-select: none;
 }
 
-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-primary);
-  color: #fff9db;
-  font-weight: 600;
+.textbox input:focus + label,
+.textbox input:not(:placeholder-shown) + label {
+    transform: translateY(-120%) scale(0.8);
+    color: var(--color-primary);
+}
+
+button[type="submit"] {
+    width: 100%;
+    height: 60px;
+    background: var(--color-primary);
+    color: var(--color-text);
+    border: none;
+    border-radius: 8px;
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, color 0.3s ease;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    background: #d6db13;
+    color: var(--color-text);
+}
+
+button[type="submit"].loading {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+.spinner {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 2px solid white;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--color-muted);
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .login-form {
+        padding: 30px 20px;
+        max-width: 90%;
+    }
+
+    .login-form h2 {
+        font-size: 20px;
+    }
+
+    .textbox input {
+        height: 56px;
+        font-size: 14px;
+    }
+
+    .textbox label {
+        font-size: 14px;
+    }
+
+    button[type="submit"] {
+        height: 56px;
+        font-size: 14px;
+    }
+}
+.password-wrapper {
+  position: relative;
+}
+.textbox {
+  position: relative;
+}
+.password-toggle {
+  position: absolute;
+  top: 40%;
+left: 80%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: background 0.3s;
+  font-size: 18px;
+  color: var(--color-muted);
+  padding: 0;
+  line-height: 1;
 }
-
-button:disabled {
-  background: #f9e89a;
-  cursor: not-allowed;
-}
-
-.error {
-  color: #c47a00;
-  margin-bottom: 12px;
-  font-weight: 600;
-  text-align: center;
+.password-toggle:hover {
+  color: var(--color-primary);
 }
