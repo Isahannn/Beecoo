@@ -37,7 +37,7 @@ const PasswordInput = ({
         className="password-toggle"
         onClick={() => setShowPassword(!showPassword)}
         aria-label={showPassword ? 'Hide password' : 'Show password'}
-        tabIndex={-1}
+        tabIndex={1}
       >
         {showPassword ? '👁️' : '👁️‍🗨️'}
       </button>

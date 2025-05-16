@@ -52,19 +52,6 @@ const Registration = () => {
     }
   };
 
-  useEffect(() => {
-    if (window.google) {
-      google.accounts.id.initialize({
-        client_id: '24435880348-4u6jpkv2dpvcriql0kd440910smlk10f.apps.googleusercontent.com',
-        callback: handleGoogleResponse,
-      });
-
-      google.accounts.id.renderButton(
-        document.getElementById('googleSignInDiv'),
-        { theme: 'outline', size: 'large' }
-      );
-    }
-  }, []);
 
   return (
     <>

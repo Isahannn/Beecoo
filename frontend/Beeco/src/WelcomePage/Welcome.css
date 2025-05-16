@@ -1,0 +1,91 @@
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px;
+    flex-wrap: wrap;
+    min-height: 100vh;
+    background: url('/frontend/Beeco/public/images/background.jpg') ;
+    overflow: hidden;
+  }
+
+  .container::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent 40%);
+    z-index: 0;
+  }
+
+  .heading, .auth-container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .container {
+
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px;
+    flex-wrap: wrap;
+  }
+
+  .heading {
+    font-weight: 300;
+    font-size: 56px;
+    color: var(--color-text);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 300px;
+    user-select: none;
+    position: relative;
+    overflow: visible;
+  }
+
+  .heading span {
+    display: block;
+    line-height: 1;
+  }
+
+  .auth-container {
+    display: flex;
+    gap: 34px;
+    flex-shrink: 0;
+  }
+
+  .auth-button {
+    padding: 16px 36px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--color-text);
+    background: var(--color-primary);
+    font-weight: 600;
+    font-size: 120%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .auth-button:hover {
+    background: var(--color-primary-dark);
+    color: #fff;
+  }
+
+  .login-button {
+    background: var(--color-primary);
+  }
+
+  .register-button {
+    background: transparent;
+    border: 2px solid var(--color-primary-dark);
+    color: var(--color-primary-dark);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .register-button:hover {
+    background: var(--color-primary-dark);
+    color: #fff;
+  }

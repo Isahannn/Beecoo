@@ -1,14 +1,16 @@
+#beeco_app/views/google_auth_views.py
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from google.auth.exceptions import GoogleAuthError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-GOOGLE_CLIENT_ID = '24435880348-4u6jpkv2dpvcriql0kd440910smlk10f.apps.googleusercontent.com'
+GOOGLE_CLIENT_ID = '604621430295-16qjcu4fjjbda1uc13kc5ufpjinr3ai4.apps.googleusercontent.com'
 
+User = get_user_model()
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
     return {
@@ -20,7 +22,6 @@ def get_tokens_for_user(user):
 @permission_classes([AllowAny])
 def google_login(request):
     token = request.data.get('token')
-
     if not token:
         return Response({'error': 'Token is required'}, status=400)
 

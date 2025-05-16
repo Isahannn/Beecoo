@@ -1,52 +1,41 @@
-import React from 'react';
-import axios from 'axios';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+// ❌ УДАЛИ ЭТО:
+// import { GoogleOAuthProvider } from '@react-oauth/google';
 
-const clientId = '24435880348-4u6jpkv2dpvcriql0kd440910smlk10f.apps.googleusercontent.com';
+import { GoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
 const GoogleLoginButton = () => {
+  const onSuccess = async (credentialResponse) => {
+    try {
+      const response = await axios.post('http://localhost:8000/api/google-login/', {
+        token: credentialResponse.credential,
+      });
 
-    const onSuccess = async (credentialResponse) => {
-        console.log('Google login success, credentialResponse:', credentialResponse);
-        try {
-            const response = await axios.post('http://localhost:8000', {
-                token: credentialResponse.credential,
-            });
+      const { user, tokens } = response.data;
+      localStorage.setItem('access_token', tokens.access);
+      localStorage.setItem('refresh_token', tokens.refresh);
 
-            console.log('Backend response:', response.data);
+      alert(`Welcome, ${user.first_name || user.email}!`);
+    } catch (error) {
+      alert('Google login failed.');
+    }
+  };
 
-            const { user, tokens } = response.data;
-            console.log('User:', user);
-            console.log('Tokens:', tokens);
+  const onError = () => {
+    alert('Google login failed.');
+  };
 
-            localStorage.setItem('access_token', tokens.access);
-            localStorage.setItem('refresh_token', tokens.refresh);
-
-            alert(`Welcome, ${user.first_name || user.email}!`);
-
-        } catch (error) {
-            console.error('Login error:', error.response?.data || error.message);
-            alert('Google login failed.');
-        }
-    };
-
-    const onError = (error) => {
-        console.error('Google login encountered an error:', error);
-        alert('Google login failed');
-    };
-
-    return (
-        <GoogleOAuthProvider clientId={clientId}>
-            <GoogleLogin
-                onSuccess={onSuccess}
-                onError={onError}
-                type="standard"
-                theme="outline"
-                size="large"
-                text="signin_with"
-            />
-        </GoogleOAuthProvider>
-    );
+  return (
+    <div className="google-login-wrapper">
+      <GoogleLogin
+        onSuccess={onSuccess}
+        onError={onError}
+        theme="outline"
+        size="large"
+        text="signin_with"
+      />
+    </div>
+  );
 };
 
 export default GoogleLoginButton;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import './LoginForm.css';  // здесь твой CSS с переменными из :root и стилями
+import './LoginForm.css';
 
 const LoginForm = ({ onSubmit, loading, error }) => {
   const [identifier, setIdentifier] = useState('');
@@ -14,7 +14,7 @@ const LoginForm = ({ onSubmit, loading, error }) => {
   return (
     <div className="registration-form-container">
       <form className="registration-form" onSubmit={handleSubmit}>
-        <h2>Log In</h2>
+        <h2>Вход</h2>
 
         {error && <div className="message error">{error}</div>}
 
@@ -27,7 +27,7 @@ const LoginForm = ({ onSubmit, loading, error }) => {
             required
             placeholder=" "
           />
-          <label htmlFor="identifier">Username or Email</label>
+          <label htmlFor="identifier">Имя или email</label>
         </div>
 
         <div className="textbox">
@@ -40,21 +40,21 @@ const LoginForm = ({ onSubmit, loading, error }) => {
             minLength={8}
             placeholder=" "
           />
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">Пароль</label>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className={loading ? 'loading' : ''}
+          className={loading ? 'загрузка' : ''}
         >
           {loading && <span className="spinner" />}
-          {loading ? 'Logging in...' : 'Log In'}
+          {loading ? 'Входим...' : 'Вход'}
         </button>
 
         <div className="login-link">
-          <NavLink to="/">Back to Home</NavLink> |{' '}
-          <NavLink to="/registration">Back to Registration</NavLink>
+          <NavLink to="/">Вернуться домой</NavLink> |{' '}
+          <NavLink to="/registration">Зарегестрироваться</NavLink>
         </div>
       </form>
     </div>

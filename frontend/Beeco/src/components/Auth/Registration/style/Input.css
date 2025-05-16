@@ -70,7 +70,9 @@
 
 .password-toggle {
   position: absolute;
-  right: 0.6rem;
+  width: 10%;
+  height: 10%;
+  left: 18rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;

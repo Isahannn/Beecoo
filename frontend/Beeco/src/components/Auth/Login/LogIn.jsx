@@ -30,7 +30,7 @@ const LogIn = () => {
         login(user);
         navigate('/home');
       } else {
-        setError('Invalid username/email or password');
+        setError('Неправильное имя или email');
       }
     } catch (err) {
       console.error('Login error:', err);
