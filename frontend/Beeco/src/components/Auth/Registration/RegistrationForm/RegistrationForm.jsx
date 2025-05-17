@@ -1,145 +1,129 @@
-  import React, { useState, useEffect, useRef } from 'react';
-  import axios from 'axios';
-  import { validationSchema } from '../../../../Validation/validation.jsx';
-  import { Link, useNavigate } from 'react-router-dom';
-  import TextInput from '../TextInput';
-  import PasswordInput from '../PasswordInput';
-  import GoogleLoginButton from '../../GoogleAuth/GoogleLoginButton.jsx';
-  import './RegistrationForm.css';
-  import gsap from 'gsap'; // Импортируем GSAP
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { validationSchema } from '../../../../Validation/validation.jsx';
+import { Link, useNavigate } from 'react-router-dom';
+import TextInput from '../TextInput';
+import PasswordInput from '../PasswordInput';
+import GoogleLoginButton from '../../GoogleAuth/GoogleLoginButton.jsx';
+import './RegistrationForm.css';
+import gsap from 'gsap';
 
-  const RegistrationForm = () => {
-    const navigate = useNavigate();
-    const formContainerRef = useRef(null); // Ref для контейнера формы
-    const [formData, setFormData] = useState({
-      email: '',
-      password: '',
-      confirm_password: '',
-      first_name: '',
-      last_name: '',
+const RegistrationForm = () => {
+  const navigate = useNavigate();
+  const formContainerRef = useRef(null);
+
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirm_password: '',
+    first_name: '',
+    last_name: '',
+  });
+  const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    const el = formContainerRef.current;
+    if (!el) return;
+
+    gsap.set(el, { opacity: 0, y: 50, scale: 0.95 });
+    gsap.to(el, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.8,
+      ease: 'power2.out'
     });
 
-    const [errors, setErrors] = useState({});
-    const [message, setMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
-
-    useEffect(() => {
-      // Анимация появления формы
-      if (formContainerRef.current) {
-        // Анимируем контейнер формы
-        gsap.fromTo(
-          formContainerRef.current,
-          {
-            opacity: 0,
-            y: 50, // Смещение вниз на 50px
-            scale: 0.95, // Легкое уменьшение масштаба
-          },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            ease: 'power2.out',
-          }
-        );
-
-        // Анимируем элементы формы (заголовок, поля, кнопки)
-        const formElements = formContainerRef.current.querySelectorAll(
-          'h2, .textbox, button, .google-login-wrapper, .login-link'
-        );
-        gsap.fromTo(
-          formElements,
-          {
-            opacity: 0,
-            y: 20, // Смещение вниз
-          },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.1, // Последовательное появление
-            ease: 'power2.out',
-            delay: 0.2, // Небольшая задержка после появления контейнера
-          }
-        );
+    const formElements = el.querySelectorAll(
+      'h2, .textbox, button[type="submit"], .google-login-wrapper, .login-link'
+    );
+    gsap.fromTo(
+      formElements,
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'power2.out',
+        delay: 0.3
       }
-    }, []);
+    );
+  }, []);
 
-    const handleChange = (e) => {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setErrors(prev => ({ ...prev, [e.target.name]: '' }));
+    setMessage('');
+  };
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      setErrors({});
-      setMessage('');
-      setIsLoading(true);
-      setIsSuccess(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrors({});
+    setMessage('');
+    setIsLoading(true);
+    setIsSuccess(false);
 
-      try {
-        const validationResult = await validationSchema.safeParseAsync(formData);
-
-        if (!validationResult.success) {
-          const validationErrors = {};
-          validationResult.error.errors.forEach((err) => {
-            validationErrors[err.path[0]] = err.message;
-          });
-          setErrors(validationErrors);
-          setMessage('Please correct the errors in the form.');
-          return;
-        }
-
-        const response = await axios.post('http://localhost:8000/registration/', {
-          email: formData.email,
-          password: formData.password,
-          first_name: formData.first_name,
-          last_name: formData.last_name,
+    try {
+      const validationResult = await validationSchema.safeParseAsync(formData);
+      if (!validationResult.success) {
+        const validationErrors = {};
+        validationResult.error.errors.forEach(err => {
+          validationErrors[err.path[0]] = err.message;
         });
-        console.log('User created with ID:', response.data.id);
-        localStorage.setItem('userId', response.data.id);
+        setErrors(validationErrors);
+        setMessage('Please correct the errors in the form.');
+        return;
+      }
 
-        setMessage('Registration successful! Redirecting...');
-        setIsSuccess(true);
+      const response = await axios.post('http://localhost:8000/registration/', {
+        email: formData.email,
+        password: formData.password,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+      });
+      localStorage.setItem('userId', response.data.id);
 
-        setFormData({
-          email: '',
-          password: '',
-          confirm_password: '',
-          first_name: '',
-          last_name: '',
+      setMessage('Registration successful! Redirecting...');
+      setIsSuccess(true);
+      setFormData({
+        email: '',
+        password: '',
+        confirm_password: '',
+        first_name: '',
+        last_name: '',
+      });
+
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (error) {
+      if (error.name === 'ZodError') {
+        const validationErrors = {};
+        error.errors.forEach(err => {
+          validationErrors[err.path[0]] = err.message;
         });
-
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-      } catch (error) {
-        console.log('Full error:', error);
-        if (error.name === 'ZodError') {
-          const validationErrors = {};
-          error.errors.forEach((err) => {
-            validationErrors[err.path[0]] = err.message;
-          });
-          setErrors(validationErrors);
-          setMessage('Please correct the errors in the form.');
-        } else if (error.response?.status === 400 && error.response?.data) {
-          console.log('Error response data:', error.response.data);
-          if (error.response.data.email) {
-            setErrors({ email: error.response.data.email });
-            setMessage('This email is already registered.');
-          } else {
-            setErrors(error.response.data);
-            setMessage('Registration failed. Please try again.');
-          }
+        setErrors(validationErrors);
+        setMessage('Please correct the errors in the form.');
+      } else if (error.response?.status === 400 && error.response.data) {
+        if (error.response.data.email) {
+          setErrors({ email: error.response.data.email });
+          setMessage('This email is already registered.');
         } else {
-          setMessage('An unexpected error occurred. Please try again later.');
+          setErrors(error.response.data);
+          setMessage('Registration failed. Please try again.');
         }
-      } finally {
-        setIsLoading(false);
+      } else {
+        setMessage('An unexpected error occurred. Please try again later.');
       }
-    };
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return (
+  return (
+    <div className="registration-page">
       <div className="registration-form-container" ref={formContainerRef}>
         <form onSubmit={handleSubmit} className="registration-form">
           <h2>Регистрация</h2>
@@ -156,11 +140,7 @@
             label="Email"
             type="email"
             value={formData.email}
-            onChange={(e) => {
-              setFormData({ ...formData, email: e.target.value });
-              setErrors({ ...errors, email: '' });
-              setMessage('');
-            }}
+            onChange={handleChange}
             error={errors.email}
             required
             autoComplete="email"
@@ -209,7 +189,9 @@
             autoComplete="new-password"
           />
 
-          <GoogleLoginButton />
+          <div className="google-login-wrapper">
+            <GoogleLoginButton />
+          </div>
 
           <button
             type="submit"
@@ -230,7 +212,8 @@
           </div>
         </form>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
-  export default RegistrationForm;
+export default RegistrationForm;

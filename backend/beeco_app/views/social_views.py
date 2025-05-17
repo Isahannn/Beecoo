@@ -10,7 +10,32 @@ from ..models.social import Follow, Friendship
 from ..serializers.user import FullUserProfileSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
+from ..serializers.user import UserSerializer
+from rest_framework.generics import ListAPIView
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+import random
+
+
+@api_view(['GET'])
+def random_users(request):
+    count = int(request.query_params.get('count', 4))
+    exclude_id = request.user.id
+
+    users = User.objects.exclude(id=exclude_id)
+    users = list(users)
+    random.shuffle(users)
+
+    serializer = UserSerializer(users[:count], many=True)
+    return Response(serializer.data)
+
+class UserListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return User.objects.exclude(id=self.request.user.id)
 
 class UserPagination(PageNumberPagination):
     page_size = 10
@@ -18,7 +43,7 @@ class UserPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class PublicUserProfileView(APIView):
+class UserProfileVieww(APIView):
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = FullUserProfileSerializer

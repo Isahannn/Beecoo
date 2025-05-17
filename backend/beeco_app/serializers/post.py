@@ -3,6 +3,7 @@ from .auth import UserSerializer
 from ..models.Post import Post
 from ..models.interaction import Like, Comment
 from .tag import TagSerializer
+from ..models.tag import Tag
 from django.utils.translation import gettext_lazy as _
 
 class PostSerializer(serializers.ModelSerializer):

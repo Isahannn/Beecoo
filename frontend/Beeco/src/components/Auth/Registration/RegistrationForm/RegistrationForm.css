@@ -13,35 +13,30 @@
   box-sizing: border-box;
 }
 
-body {
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.registration-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
   background: url('/images/Background.jpg') no-repeat center center fixed;
   background-size: cover;
-  color: var(--color-text);
-  margin: 0;
-  display: grid;
-  place-items: center;
-  height: 100vh;
-  font-family: "Euclid Circular A", "Poppins", sans-serif;
-  position: relative;
-  will-change: background-color, box-shadow;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-
-  z-index: 0;
-  pointer-events: none;
-}
 .registration-form-container {
-  position: relative;
-  width: 130%;
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
   max-width: 700px;
   padding: 20px;
   z-index: 1;
-  display: flex;
-  justify-content: center;
 }
 
 .registration-form {
@@ -93,7 +88,6 @@ body::before {
   top: 50%;
   left: 16px;
   transform: translateY(-50%);
-  transform-origin: 0 50%;
   pointer-events: none;
   color: var(--color-muted);
   transition: all 0.3s ease;
@@ -130,6 +124,10 @@ body::before {
   font-size: 14px;
   margin-top: 5px;
   margin-bottom: 10px;
+}
+
+.google-login-wrapper {
+  margin-bottom: 20px;
 }
 
 button[type="submit"] {

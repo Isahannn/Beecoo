@@ -6,3 +6,4 @@ django-cors-headers
 channels
 Pillow
 psycopg2-binary
+django-environ

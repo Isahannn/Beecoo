@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from './Context';
+import { useAuth } from './Context/AutoContext.jsx';
 
 const PublicRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();

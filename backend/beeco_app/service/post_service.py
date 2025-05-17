@@ -18,14 +18,14 @@ def like_post(user: User, post: Post) -> None:
         if user != post.user:
             send_notification(
                 receiver=post.user,
-                message=f"{user.username} лайкнул ваш пост.",
+                message=f"{user.firstname} лайкнул ваш пост.",
                 type="like",
                 metadata={"post_id": post.id}
             )
 
         _send_ws_event(user=post.user, data={
             "event": "like",
-            "user": user.username,
+            "user": user.firstname,
             "post_id": post.id,
         })
 
@@ -37,14 +37,14 @@ def comment_post(user: User, post: Post, text: str) -> Comment:
     if user != post.user:
         send_notification(
             receiver=post.user,
-            message=f"{user.username} прокомментировал ваш пост.",
+            message=f"{user.firstname} прокомментировал ваш пост.",
             type="comment",
             metadata={"post_id": post.id, "comment_id": comment.id}
         )
 
     _send_ws_event(user=post.user, data={
         "event": "comment",
-        "user": user.username,
+        "user": user.firstname,
         "post_id": post.id,
         "comment_id": comment.id,
         "text": text,
@@ -61,7 +61,7 @@ def edit_comment(user: User, comment: Comment, new_text: str) -> None:
 
         _send_ws_event(user=comment.post.user, data={
             "event": "comment_edit",
-            "user": user.username,
+            "user": user.firstname,
             "post_id": comment.post.id,
             "comment_id": comment.id,
             "new_text": new_text,
@@ -78,7 +78,7 @@ def delete_comment(user: User, comment: Comment) -> None:
 
         _send_ws_event(user=post.user, data={
             "event": "comment_delete",
-            "user": user.username,
+            "user": user.firstname,
             "post_id": post.id,
             "comment_id": comment_id,
         })

@@ -14,6 +14,7 @@
 }
 
 .login-form-container {
+    opacity: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -23,8 +24,7 @@
     background: url('/images/Background.jpg') no-repeat center center;
     background-size: cover;
     background-position: center;
-    transition: background-position 0.3s ease; /* чуть плавнее */
-    /* убрал will-change для оптимизации */
+    transition: background-position 0.3s ease;
 }
 
 .login-form {
