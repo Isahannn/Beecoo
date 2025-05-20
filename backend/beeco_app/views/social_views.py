@@ -1,9 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import NotFound
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework import status
 from ..models.notification import Notification
 from ..models.user import User
 from ..models.social import Follow, Friendship
@@ -15,9 +10,11 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.db import models
 import random
-from django.db.models import Q
 import uuid
 import logging
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from ..serializers.user import UserSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -238,3 +235,48 @@ class FollowingNotMutualView(APIView):
         except Exception as e:
             logger.error(f"Error in FollowingNotMutualView: {str(e)}")
             return Response({'detail': 'Server error'}, status=500)
+
+        from django.core.paginator import Paginator
+        from rest_framework.decorators import api_view, authentication_classes, permission_classes
+        from rest_framework.permissions import IsAuthenticated
+        from rest_framework.response import Response
+        from rest_framework.exceptions import NotFound
+        from rest_framework import status
+        from rest_framework_simplejwt.authentication import JWTAuthentication
+        from django.db.models import Q
+        from ..models.social import Follow
+        from ..models.user import User
+        from ..serializers.user import UserSerializer
+
+        @api_view(['GET'])
+        @authentication_classes([JWTAuthentication])
+        @permission_classes([IsAuthenticated])
+        def get_mutual_friends(request):
+            user = request.user
+            search = request.GET.get('search', '')
+            page = int(request.GET.get('page', 1))
+
+            following_ids = Follow.objects.filter(follower=user).values_list('following_id', flat=True)
+            followers_ids = Follow.objects.filter(following=user).values_list('follower_id', flat=True)
+            mutual_ids = set(following_ids).intersection(followers_ids)
+            mutual_friends = User.objects.filter(id__in=mutual_ids)
+
+            if search:
+                mutual_friends = mutual_friends.filter(
+                    Q(username__icontains=search) | Q(first_name__icontains=search) | Q(last_name__icontains=search)
+                )
+
+            paginator = Paginator(mutual_friends, 10)
+
+            try:
+                page_obj = paginator.page(page)
+            except:
+                raise NotFound('Invalid page')
+
+            serializer = UserSerializer(page_obj, many=True)
+            return Response({
+                'results': serializer.data,
+                'count': paginator.count,
+                'num_pages': paginator.num_pages,
+                'current_page': page
+            }, status=status.HTTP_200_OK)

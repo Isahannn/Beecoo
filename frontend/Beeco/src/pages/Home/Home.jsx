@@ -3,7 +3,7 @@ import { useAuth } from "../../Context/AutoContext.jsx";
 import { usePosts } from "./PostContext.jsx";
 import axios from "axios";
 import PostList from "./PostList";
-import FriendSuggestions from "./FriendSuggestions";
+import FriendSuggestions from "./FriendSuggestions/FriendSuggestions.jsx";
 import Recommendation from "./Recommendation";
 import PostModal from "./PostModal";
 import "./Home.css";

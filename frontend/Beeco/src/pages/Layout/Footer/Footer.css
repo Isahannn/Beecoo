@@ -8,9 +8,10 @@
   min-height: 100vh;
 }
 .footer {
-  margin-left:14%;
+  margin-left: 21%;
   background: #ffffff;
   display: flex;
+  width: 95%;
   font-family: "Euclid Circular B", "Poppins", sans-serif;
   color: #1f2937;
 }

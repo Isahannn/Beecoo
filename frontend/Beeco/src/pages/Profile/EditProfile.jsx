@@ -18,7 +18,6 @@ const EditProfile = ({ user, onCancel, onSave }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Initialize formData from user prop
   useEffect(() => {
     if (user) {
       setFormData({
@@ -74,7 +73,7 @@ const EditProfile = ({ user, onCancel, onSave }) => {
 
       addNotification('Profile successfully updated', 'success');
 
-      // Call onSave with server response data
+
       if (onSave) {
         onSave(response.data);
       }

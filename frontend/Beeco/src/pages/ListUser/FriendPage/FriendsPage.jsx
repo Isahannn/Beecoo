@@ -81,9 +81,13 @@ const FriendsPage = () => {
       addNotification('Подписка оформлена!', 'follow');
       // Check if the followed user follows you back
       const isMutual = await checkMutualFollow(userId);
+      console.log('handleFollow: isMutual=', isMutual, 'userId=', userId);
       if (isMutual) {
-        fetchFriends(); // Refresh to include new mutual friend
+        await fetchFriends(); // Refresh to include new mutual friend
         addNotification('Новый взаимный друг!', 'mutual-follow');
+      } else {
+        // Fallback: refresh anyway to ensure consistency
+        await fetchFriends();
       }
     } catch (err) {
       console.error('Follow error:', err.message);
@@ -92,7 +96,7 @@ const FriendsPage = () => {
     }
   };
 
-  const checkMutualFollow = async (userId) => {
+  const checkMutualFollow = async (userId, retries = 3, delay = 500) => {
     try {
       const token = getToken();
       const response = await fetch(`${API_URL}/api/users/${userId}/followers/`, {
@@ -103,7 +107,15 @@ const FriendsPage = () => {
       if (!response.ok) throw new Error('Ошибка проверки подписчиков');
       const followers = await response.json();
       const currentUserId = JSON.parse(localStorage.getItem('user'))?.id;
-      return followers.results.some((follower) => follower.id === currentUserId);
+      console.log('checkMutualFollow: followers=', followers, 'currentUserId=', currentUserId);
+      const isMutual = followers.results.some((follower) => follower.id === currentUserId);
+      if (isMutual) return true;
+      if (retries > 0) {
+        console.log(`checkMutualFollow: retrying, attempts left=${retries}`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return await checkMutualFollow(userId, retries - 1, delay);
+      }
+      return false;
     } catch (err) {
       console.error('Check mutual follow error:', err.message);
       return false;
