@@ -9,17 +9,15 @@ from google.auth.transport import requests
 from google.auth.exceptions import GoogleAuthError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-# Настройка логирования
+
 logger = logging.getLogger(__name__)
 
-# Ваш Google Client ID
 GOOGLE_CLIENT_ID = '604621430295-16qjcu4fjjbda1uc13kc5ufpjinr3ai4.apps.googleusercontent.com'
 
 User = get_user_model()
 
 
 def get_tokens_for_user(user):
-    """Генерирует JWT-токены для пользователя."""
     try:
         refresh = RefreshToken.for_user(user)
         return {
@@ -34,35 +32,29 @@ def get_tokens_for_user(user):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def google_login(request):
-    """Обрабатывает вход через Google OAuth."""
     token = request.data.get('token')
 
-    # Проверка наличия токена
     if not token:
         logger.warning("Запрос без токена")
         return Response({'error': 'Токен обязателен'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Проверка формата токена (грубая проверка JWT)
     if not isinstance(token, str) or '.' not in token:
         logger.warning(f"Неверный формат токена: {token[:10]}...")
         return Response({'error': 'Неверный формат токена'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        # Проверка Google JWT
         idinfo = id_token.verify_oauth2_token(
             token,
             requests.Request(),
             GOOGLE_CLIENT_ID,
-            clock_skew_in_seconds=10  # Допуск на рассинхронизацию времени
+            clock_skew_in_seconds=10
         )
         logger.info(f"Токен проверен для email: {idinfo.get('email')}")
 
-        # Извлечение данных пользователя
         email = idinfo['email']
         first_name = idinfo.get('given_name', '')
         last_name = idinfo.get('family_name', '')
 
-        # Создание или получение пользователя
         try:
             user, created = User.objects.get_or_create(
                 email=email,
@@ -73,11 +65,10 @@ def google_login(request):
             )
 
             if created:
-                user.set_unusable_password()  # Пользователь без пароля
+                user.set_unusable_password()
                 user.save()
                 logger.info(f"Создан новый пользователь: {email}")
             else:
-                # Обновляем данные существующего пользователя, если нужно
                 if user.first_name != first_name or user.last_name != last_name:
                     user.first_name = first_name
                     user.last_name = last_name
@@ -91,10 +82,8 @@ def google_login(request):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-        # Генерация токенов
         tokens = get_tokens_for_user(user)
 
-        # Формирование ответа
         return Response({
             'user': {
                 'id': user.id,

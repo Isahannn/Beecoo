@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         try:
-            # Extract token from query string
             query_string = self.scope['query_string'].decode()
             token = None
             for param in query_string.split('&'):

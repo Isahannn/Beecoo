@@ -15,10 +15,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 from ..models.social import Friendship
 
-
-
-from random import sample
-
 User = get_user_model()
 logger = logging.getLogger(__name__)
 

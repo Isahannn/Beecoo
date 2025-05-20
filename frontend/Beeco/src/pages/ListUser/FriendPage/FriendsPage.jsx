@@ -20,6 +20,7 @@ const FriendsPage = () => {
   const wsRef = useRef(null);
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
+  const isMountedRef = useRef(true);
 
   const fetchFriends = useCallback(async () => {
     if (!isAuthenticated) {
@@ -38,7 +39,7 @@ const FriendsPage = () => {
       url.searchParams.append('page', page);
       if (searchQuery) url.searchParams.append('search', searchQuery);
 
-      console.log('Fetching friends with URL:', url.toString());
+      console.log('Fetching mutual friends with URL:', url.toString());
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
@@ -52,12 +53,12 @@ const FriendsPage = () => {
       }
 
       const data = await response.json();
-      console.log('Friends API response:', data);
+      console.log('Mutual friends API response:', data);
       setFriends(data.results || []);
-      setTotalPages(Math.ceil(data.count / 10));
+      setTotalPages(Math.ceil(data.count / 10) || 1);
       setError(null);
     } catch (err) {
-      console.error('Fetch friends error:', err.message);
+      console.error('Fetch mutual friends error:', err.message);
       setError(err.message || 'Не удалось загрузить друзей');
       addNotification(err.message || 'Не удалось загрузить друзей', 'error');
     } finally {
@@ -76,16 +77,36 @@ const FriendsPage = () => {
         },
       });
       if (!response.ok) throw new Error('Ошибка при подписке');
-      setFriends((prev) =>
-        prev.map((friend) =>
-          friend.id === userId ? { ...friend, is_following: true } : friend
-        )
-      );
+      const data = await response.json();
       addNotification('Подписка оформлена!', 'follow');
+      // Check if the followed user follows you back
+      const isMutual = await checkMutualFollow(userId);
+      if (isMutual) {
+        fetchFriends(); // Refresh to include new mutual friend
+        addNotification('Новый взаимный друг!', 'mutual-follow');
+      }
     } catch (err) {
       console.error('Follow error:', err.message);
       setError(err.message || 'Ошибка при подписке');
       addNotification(err.message || 'Ошибка при подписке', 'error');
+    }
+  };
+
+  const checkMutualFollow = async (userId) => {
+    try {
+      const token = getToken();
+      const response = await fetch(`${API_URL}/api/users/${userId}/followers/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Ошибка проверки подписчиков');
+      const followers = await response.json();
+      const currentUserId = JSON.parse(localStorage.getItem('user'))?.id;
+      return followers.results.some((follower) => follower.id === currentUserId);
+    } catch (err) {
+      console.error('Check mutual follow error:', err.message);
+      return false;
     }
   };
 
@@ -112,56 +133,81 @@ const FriendsPage = () => {
   };
 
   const setupWebSocket = useCallback(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !isMountedRef.current) return;
     const token = getToken();
-    if (!token) return;
+    if (!token) {
+      addNotification('Токен для WebSocket отсутствует.', 'error');
+      return;
+    }
 
     console.log(`Attempting WebSocket connection, attempt ${reconnectAttempts.current + 1}`);
-    wsRef.current = new WebSocket(`${WS_URL}/ws/notifications/?token=${token}`);
+    try {
+      wsRef.current = new WebSocket(`${WS_URL}/ws/notifications/?token=${token}`);
+    } catch (err) {
+      console.error('WebSocket initialization error:', err);
+      addNotification('Не удалось инициализировать WebSocket.', 'error');
+      return;
+    }
 
     wsRef.current.onopen = () => {
+      if (!isMountedRef.current) return;
       console.log('WebSocket connected');
       reconnectAttempts.current = 0;
+      addNotification('WebSocket подключен.', 'websocket');
     };
 
     wsRef.current.onerror = (event) => {
+      if (!isMountedRef.current) return;
       console.error('WebSocket error:', event);
+      addNotification('Ошибка WebSocket. Пытаемся переподключиться...', 'error');
     };
 
     wsRef.current.onclose = (event) => {
+      if (!isMountedRef.current) return;
       console.log(`WebSocket closed: code=${event.code}, reason=${event.reason}`);
-      if (reconnectAttempts.current < maxReconnectAttempts) {
-        const delay = 10000;
+      wsRef.current = null;
+      if (reconnectAttempts.current < maxReconnectAttempts && event.code !== 1000) {
+        const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
         console.log(`Reconnecting in ${delay}ms`);
         setTimeout(setupWebSocket, delay);
         reconnectAttempts.current += 1;
       } else {
         console.error('Max WebSocket reconnect attempts reached');
-        setError('Не удалось подключиться к уведомлениям');
         addNotification('Не удалось подключиться к уведомлениям', 'error');
       }
     };
 
     wsRef.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'unfollow') {
-        console.log('Received unfollow notification:', data);
-        fetchFriends();
-        addNotification('Пользователь отписался', 'unfollow');
-      } else if (data.type === 'notification') {
-        console.log('Received notification:', data.notification);
-        addNotification(data.notification.message, 'websocket');
+      if (!isMountedRef.current) return;
+      try {
+        const data = JSON.parse(event.data);
+        console.log('WebSocket message received:', data);
+        if (data.type === 'follow' || data.type === 'unfollow') {
+          fetchFriends();
+          addNotification(
+            data.type === 'follow' ? 'Новый взаимный друг!' : 'Пользователь отписался',
+            data.type
+          );
+        } else if (data.type === 'notification') {
+          addNotification(data.notification.message, 'websocket');
+        }
+      } catch (err) {
+        console.error('WebSocket message parsing error:', err);
+        addNotification('Ошибка обработки уведомления.', 'error');
       }
     };
   }, [isAuthenticated, getToken, fetchFriends, addNotification]);
 
   useEffect(() => {
+    isMountedRef.current = true;
     fetchFriends();
     setupWebSocket();
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
+      isMountedRef.current = false;
+      if (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED) {
+        wsRef.current.close(1000, 'Component unmounted');
       }
+      wsRef.current = null;
     };
   }, [fetchFriends, setupWebSocket]);
 
@@ -181,16 +227,14 @@ const FriendsPage = () => {
         {friends.length > 0 ? (
           <>
             <div className="friends-list">
-              {friends
-                .filter((friend) => friend.is_following)
-                .map((friend) => (
-                  <UserCard
-                    key={friend.id}
-                    user={friend}
-                    onFollow={handleFollow}
-                    onUnfollow={handleUnfollow}
-                  />
-                ))}
+              {friends.map((friend) => (
+                <UserCard
+                  key={friend.id}
+                  user={friend}
+                  onFollow={handleFollow}
+                  onUnfollow={handleUnfollow}
+                />
+              ))}
             </div>
             <div className="pagination">
               <button
@@ -214,7 +258,9 @@ const FriendsPage = () => {
           </>
         ) : (
           <p className="no-friends">
-            {searchQuery ? 'Друзья не найдены' : 'У вас нет друзей'}
+            {searchQuery
+              ? 'Друзья не найдены'
+              : 'У вас нет взаимных друзей. Подпишитесь на кого-нибудь, кто подписан на вас!'}
           </p>
         )}
       </div>

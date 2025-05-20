@@ -53,21 +53,6 @@ class PostSerializer(serializers.ModelSerializer):
         return post
 
 
-class CommentSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
-    replies = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Comment
-        fields = [
-            'id', 'author', 'post', 'parent_comment',
-            'text', 'created_at', 'replies', 'likes'
-        ]
-        read_only_fields = ['id', 'author', 'created_at']
-
-    def get_replies(self, obj):
-        replies = obj.replies.all()
-        return CommentSerializer(replies, many=True).data
 
 class LikeSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
