@@ -1,12 +1,12 @@
-/* Контейнер страницы */
+
 .home-container {
+  background: #FFFFFF;
   display: flex;
   min-height: 100vh;
-  background: #ffffff;
   color: #1f2937;
   font-family: "Euclid Circular B", "Poppins", sans-serif;
-  margin-left: 300px;
-  width: 200%;
+margin-left: 20%;
+  width: 100%;
 }
 
 .main-content {

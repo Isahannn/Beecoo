@@ -1,0 +1,76 @@
+.friend-suggestions {
+  background-color: #f9f9ff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.suggestions-title {
+  font-size: 22px;
+  margin-bottom: 16px;
+  color: #333;
+  text-align: center;
+}
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  transition: background 0.3s;
+}
+
+.friend-item:hover {
+  background-color: #fdffee;
+  border-radius: 8px;
+}
+
+.friend-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff8cc;
+}
+
+.friend-name-link {
+  font-family: "Euclid Circular B", "Poppins", sans-serif;
+  flex-grow: 1;
+  text-decoration: none;
+  color: #7e711a;
+  font-weight: 500;
+}
+
+.friend-name-link:hover {
+  text-decoration: underline;
+}
+
+.friend-button {
+  background-color: #e2ce4a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.friend-button:hover {
+  background-color: #d8d035;
+}
+
+.no-suggestions {
+  text-align: center;
+  color: #888;
+  margin-top: 10px;
+}
+
+.loading {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+}

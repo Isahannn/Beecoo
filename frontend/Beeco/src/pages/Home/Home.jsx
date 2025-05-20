@@ -1,171 +1,189 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../../Context/AutoContext.jsx";
+import { usePosts } from "./PostContext.jsx";
+import axios from "axios";
+import PostList from "./PostList";
+import FriendSuggestions from "./FriendSuggestions";
+import Recommendation from "./Recommendation";
+import PostModal from "./PostModal";
 import "./Home.css";
+import "../ListUser/UserPage/UsersPage.css";
 
 const Home = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, getToken } = useAuth();
   const name = user?.first_name || "Гость";
-
-  // Posts state
-  const [posts, setPosts] = useState([]);
-  const [page, setPage] = useState(1);
-  const [hasNext, setHasNext] = useState(true);
+  const { posts, setPosts, addPost, setLoading, setError } = usePosts();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loadingPosts, setLoadingPosts] = useState(false);
-
-  // Friend suggestions state
   const [friendSuggestions, setFriendSuggestions] = useState([]);
   const [loadingFriends, setLoadingFriends] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const postsPerPage = 10;
 
-  const observerRef = useRef(null);
-  const token = localStorage.getItem("auth_token");
+  console.log("Home: setPosts type:", typeof setPosts);
 
   const fetchPosts = async (pageNum) => {
-    if (!isAuthenticated || !hasNext || !token) return;
+    if (!isAuthenticated) {
+      setError("Пожалуйста, войдите в аккаунт");
+      return;
+    }
+    setLoading(true);
     setLoadingPosts(true);
     try {
-      const response = await axios.get(`http://localhost:8000/posts/?page=${pageNum}`, {
-        headers: { Authorization: `Token ${token}` },
+      const token = getToken();
+      if (!token) throw new Error("Токен авторизации отсутствует");
+      const response = await axios.get(
+        `http://localhost:8000/api/posts/?page=${pageNum}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const { results, count } = response.data;
+      console.log("Fetched posts:", results);
+      setPosts((prev) => {
+        const existingIds = new Set(prev.map((post) => post.id));
+        const newPosts = results.filter((post) => !existingIds.has(post.id));
+        return [...prev, ...newPosts];
       });
-      const { results, next } = response.data;
-      setPosts((prev) => [...prev, ...results]);
-      setHasNext(!!next);
+      setTotalPages(Math.ceil(count / postsPerPage));
+      setError(null);
     } catch (error) {
       console.error("Ошибка загрузки постов:", error.response?.data || error.message);
-      setHasNext(false);
+      setError("Не удалось загрузить посты: " + (error.message || "Неизвестная ошибка"));
     } finally {
+      setLoading(false);
       setLoadingPosts(false);
     }
   };
 
   const fetchFriendSuggestions = async () => {
-    if (!isAuthenticated || !token) return;
+    if (!isAuthenticated) return;
     setLoadingFriends(true);
     try {
+      const token = getToken();
+      if (!token) throw new Error("Токен авторизации отсутствует");
       const response = await axios.get("http://localhost:8000/users/random/?count=3", {
-        headers: { Authorization: `Token ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const users = response.data;
-
-      // Filter out current user and existing friends
       const suggestions = [];
-      for (const potentialFriend of users) {
-        if (potentialFriend.id === user?.id) continue;
-
-        const friendshipResponse = await axios.get(
-          `http://localhost:8000/check-friendship/${potentialFriend.id}/`,
-          { headers: { Authorization: `Token ${token}` } }
-        );
-        if (!friendshipResponse.data.is_following) {
-          suggestions.push(potentialFriend);
+      for (const potential of users) {
+        if (potential.id === user?.id) continue;
+        const res = await axios.get(`http://localhost:8000/check-friendship/${potential.id}/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.data.is_friend) {
+          suggestions.push(potential);
           if (suggestions.length >= 3) break;
         }
       }
       setFriendSuggestions(suggestions);
     } catch (error) {
       console.error("Ошибка загрузки предложений дружбы:", error.response?.data || error.message);
+      setError("Не удалось загрузить рекомендации друзей");
     } finally {
       setLoadingFriends(false);
     }
   };
 
   const sendFriendRequest = async (userId) => {
-    if (!token) return;
+    if (!isAuthenticated) {
+      setError("Пожалуйста, войдите в аккаунт");
+      return;
+    }
     try {
-      await axios.post(
-        `http://localhost:8000/follow/${userId}/`,
+      const token = getToken();
+      if (!token) throw new Error("Токен авторизации отсутствует");
+      console.log(`Sending follow request to user: ${userId}`);
+      const response = await axios.post(
+        `http://localhost:8000/user/${userId}/follow/`,
         {},
-        { headers: { Authorization: `Token ${token}` } }
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        }
       );
-      setFriendSuggestions((prev) => prev.filter((friend) => friend.id !== userId));
-      alert("Запрос на дружбу отправлен!");
+      console.log("Follow request successful:", response.data);
+      setFriendSuggestions((prev) => prev.filter((f) => f.id !== userId));
+      setError(null);
+      return response.data;
     } catch (error) {
-      console.error("Ошибка отправки запроса на дружбу:", error.response?.data || error.message);
-      alert("Ошибка при отправке запроса на дружбу.");
+      console.error("Ошибка отправки запроса на подписку:", error.response?.data || error.message);
+      const errorMessage = error.response?.data?.detail || "Ошибка при отправке запроса на подписку";
+      setError(errorMessage);
+      throw error;
     }
   };
 
-  // Load posts and friend suggestions on page or auth/token change
   useEffect(() => {
-    fetchPosts(page);
-    // Only fetch friend suggestions once when authenticated and token changes
-    if (page === 1) fetchFriendSuggestions();
-  }, [page, isAuthenticated, token]);
+    fetchPosts(currentPage);
+    if (currentPage === 1) fetchFriendSuggestions();
+  }, [currentPage, isAuthenticated]);
 
-  // Infinite scroll observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !loadingPosts && hasNext) {
-          setPage((prev) => prev + 1);
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
+      setCurrentPage(newPage);
     }
-    return () => {
-      if (observerRef.current) observer.unobserve(observerRef.current);
-    };
-  }, [loadingPosts, hasNext]);
+  };
+
+  const handleDeletePost = useCallback((deletedPostId) => {
+    console.log("handleDeletePost called with ID:", deletedPostId);
+    if (typeof setPosts !== "function") {
+      console.error("setPosts is not a function in handleDeletePost");
+      setError("Ошибка: невозможно обновить список постов");
+      return;
+    }
+    setPosts((prev) => {
+      const newPosts = prev.filter((post) => post.id !== deletedPostId);
+      console.log("Updated posts after deletion:", newPosts);
+      return newPosts;
+    });
+  }, [setPosts, setError]);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handlePostCreated = (newPost) => {
+    console.log("New post created:", newPost);
+    addPost(newPost);
+    setCurrentPage(1);
+    setTimeout(() => {
+      fetchPosts(1);
+    }, 1000);
+  };
 
   return (
     <div className="home-container">
       <div className="main-content">
-        <h1>Эта страница</h1>
+        <h1>Домашняя страница</h1>
         <p className="username">Добро пожаловать, {name}!</p>
-        <div className="posts">
-          {posts.map((post) => (
-            <div key={post.id} className="post-card">
-              <h3>{post.author.first_name}</h3>
-              {post.title && <h4>{post.title}</h4>}
-              <p>{post.description}</p>
-              <span>{new Date(post.created_at).toLocaleDateString()}</span>
-              {post.tags.length > 0 && (
-                <div className="tags">
-                  {post.tags.map((tag) => (
-                    <span key={tag.id} className="tag">{tag.name}</span>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-          {loadingPosts && <div className="loading">Загрузка постов...</div>}
-          <div ref={observerRef} className="observer"></div>
-        </div>
+        <PostList
+          posts={posts}
+          currentUser={user}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onDeletePost={handleDeletePost}
+          isFetchingMore={loadingPosts}
+          fetchPosts={() => fetchPosts(currentPage)}
+        />
+        {isModalOpen && (
+          <PostModal onClose={handleCloseModal} onPostCreated={handlePostCreated} />
+        )}
       </div>
       <aside className="sidebar">
-        <div className="recommendations">
-          <h2>Рекомендации</h2>
-          <div className="recommendation-item">
-            <p>Интересная новость: Новый проект запущен!</p>
-          </div>
-        </div>
-        <div className="friend-suggestions">
-          <h2>Предложения дружбы</h2>
-          {loadingFriends ? (
-            <div className="loading">Загрузка...</div>
-          ) : friendSuggestions.length > 0 ? (
-            friendSuggestions.map((friend) => (
-              <div key={friend.id} className="friend-item">
-                <img
-                  src={friend.avatar || "https://via.placeholder.com/50"}
-                  alt={friend.first_name}
-                />
-                <p>{friend.first_name}</p>
-                <button
-                  className="friend-button"
-                  onClick={() => sendFriendRequest(friend.id)}
-                >
-                  Подружиться
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>Нет предложений дружбы.</p>
-          )}
-        </div>
+        <Recommendation text="Интересная новость: Новый проект запущен!" />
+        <FriendSuggestions
+          suggestions={friendSuggestions}
+          loading={loadingFriends}
+          onAddFriend={sendFriendRequest}
+        />
       </aside>
     </div>
   );

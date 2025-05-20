@@ -1,0 +1,203 @@
+:root {
+    --color-text: #494538;
+    --color-muted: #adabb4;
+    --color-primary: #e0ef0e;
+    --color-background: #fffde8;
+    --color-input-bg: #fefeea;
+    --color-error: #dc3545;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+    min-height: 100vh;
+    background: url('/images/Background.webp') no-repeat center center;
+    background-size: cover;
+    background-position: center;
+    transition: background-position 0.3s ease;
+    padding: 40px 20px;
+}
+
+.profile-page {
+    background: #ffffff;
+    border-radius: 30px;
+    width: 100%;
+    max-width: 800px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(240, 228, 83, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Стили для ProfileHeader */
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+}
+
+.profile-header .avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-primary);
+    transition: transform 0.3s ease;
+}
+
+.profile-header .avatar:hover {
+    transform: scale(1.05);
+}
+
+.profile-header h2 {
+    color: #1a1a1a;
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.profile-header .profile-stats {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    margin: 12px 0;
+}
+
+.profile-header .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.profile-header .stat-number {
+    color: #1a1a1a;
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.profile-header .stat-label {
+    color: var(--color-muted);
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.profile-header .bio {
+    color: var(--color-muted);
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 16px;
+    max-width: 500px;
+}
+
+/* Стили для ProfileActions */
+.profile-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.profile-actions button {
+    width: 160px;
+    height: 48px;
+    background: var(--color-primary);
+    color: var(--color-text);
+    border: none;
+    border-radius: 8px;
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.profile-actions button:hover {
+    background: #d6db13;
+}
+
+.profile-actions button:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+/* Стили для PostList */
+.post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.error-message {
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #fff0f0;
+    color: var(--color-error);
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 14px;
+    text-align: center;
+}
+
+.loading {
+
+    font-family: "Euclid Circular A", "Poppins", sans-serif;
+    font-size: 18px;
+    text-align: center;
+    padding: 40px;
+}
+
+@media (max-width: 600px) {
+    .profile-page-container {
+        padding: 20px 10px;
+    }
+
+    .profile-page {
+        padding: 20px;
+        max-width: 95%;
+    }
+
+    .profile-header .avatar {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profile-header h2 {
+        font-size: 20px;
+    }
+
+    .profile-header .profile-stats {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .profile-header .stat-number {
+        font-size: 24px;
+    }
+
+    .profile-header .stat-label {
+        font-size: 12px;
+    }
+
+    .profile-header .bio {
+        font-size: 14px;
+    }
+
+    .profile-actions button {
+        width: 120px;
+        height: 40px;
+        font-size: 12px;
+    }
+}

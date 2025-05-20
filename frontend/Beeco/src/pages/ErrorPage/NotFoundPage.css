@@ -1,8 +1,8 @@
 :root {
-  --color-text: #ffffff;       /* Белый текст */
+  --color-text: #ffffff;
   --color-muted: #bbaa33;
   --color-primary: #f2c94c;
-  --color-bg: #5a4b00;         /* Тёмно-жёлтый фон */
+  --color-bg: #5a4b00;
 }
 
 

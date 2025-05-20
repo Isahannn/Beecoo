@@ -1,0 +1,151 @@
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-name {
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.user-name:hover {
+  color: var(--color-primary);
+}
+
+.user-bio {
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 14px;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.friend-action {
+  position: relative;
+}
+
+.friend-button {
+  padding: 8px 16px;
+  background: var(--color-primary);
+  color: var(--color-text);
+  border: none;
+  border-radius: 8px;
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.friend-button:hover {
+  background: #d6db13;
+}
+
+.friend-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.ellipsis {
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--color-text);
+  position: relative;
+}
+
+.unfollow-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #f6f6f6;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  padding: 8px;
+}
+
+.unfollow-dropdown button {
+  padding: 8px 16px;
+  background: var(--color-error);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.unfollow-dropdown button:hover {
+  background: #c82333;
+}
+
+@media (max-width: 600px) {
+  .user-card {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .user-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .user-name {
+    font-size: 16px;
+  }
+
+  .user-bio {
+    font-size: 12px;
+  }
+
+  .friend-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .friend-status {
+    font-size: 12px;
+  }
+
+  .unfollow-dropdown {
+    padding: 6px;
+  }
+
+  .unfollow-dropdown button {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}

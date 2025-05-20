@@ -1,0 +1,285 @@
+*{
+  background: none;
+}
+.post-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 16px;
+  justify-content: center;
+  max-width: 100%;
+}
+.post-image {
+  width: 100%;
+  max-height: 350px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.post-header {
+    background: none;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.user-info {
+  flex-grow: 1;
+}
+
+.post-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+.post-author {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 4px 0 0;
+}
+
+.post-description {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.like-button {
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  color: #555;
+  cursor: pointer;
+}
+
+.like-button:hover {
+  color: #e63946;
+}
+
+.post-date {
+  font-size: 0.75rem;
+  color: #888;
+}
+.like-button {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: transform 0.2s;
+}
+
+.like-button:hover {
+  transform: scale(1.1);
+}
+
+.like-button.liked {
+  color: #c0392b;
+}
+
+.likes-count {
+  margin-right: auto;
+  font-weight: bold;
+  color: #333;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 6px;
+  max-width: 300px;
+  width: 90%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.delete-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button {
+  cursor: pointer;
+}
+/* Existing styles assumed to be in PostCard.css */
+.post-card {
+  background: var(--color-bg);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.post-title {
+  font-size: 18px;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.post-author {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 4px 0 0;
+}
+
+.post-description {
+  font-size: 16px;
+  color: var(--color-text);
+  margin: 12px 0;
+}
+
+.post-image {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+.post-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.like-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.like-button.liked {
+  color: red;
+}
+
+.likes-count {
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.post-date {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+/* New styles for ellipsis menu */
+.post-menu {
+  position: relative;
+  margin-left: auto; /* Push to the right */
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.menu-button:hover {
+  background: var(--color-bg-hover);
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--color-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  min-width: 120px;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background: var(--color-bg-hover);
+}
+
+.delete-button {
+  color: var(--color-error); /* Red for delete action */
+}
+
+/* Reuse error-message from UsersPage.css */
+.error-message {
+  color: var(--color-error);
+  background-color: #fff0f0;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 14px;
+}
+

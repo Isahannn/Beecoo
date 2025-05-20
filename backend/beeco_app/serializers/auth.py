@@ -5,6 +5,9 @@ from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from ..models.user import User
+from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth import get_user_model
+
 
 class CustomAuthTokenSerializer(serializers.Serializer):
     email = serializers.EmailField(label="Email")
@@ -31,7 +34,19 @@ class CustomAuthTokenSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
+    def authenticate(self, request, email=None, password=None, **kwargs):
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=email)
+            if user.check_password(password):
+                return user
+        except User.DoesNotExist:
+            return None
+        return None
+
+
 class RegisterSerializer(serializers.ModelSerializer):
+    confirm_password = serializers.CharField(write_only=True)
     password = serializers.CharField(
         write_only=True,
         required=True,
@@ -47,7 +62,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = [
             'email', 'password', 'confirm_password',
             'first_name', 'last_name',
-            'date_of_birth', 'location'
+            'date_of_birth',
         ]
         extra_kwargs = {
             'password': {'write_only': True},
@@ -74,16 +89,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+from rest_framework import serializers
+from ..models.user import User
+
 class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.ReadOnlyField()
+
     class Meta:
         model = User
-        fields = ['email']
+        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'avatar']
         extra_kwargs = {
             'password': {'write_only': True}
         }
         read_only_fields = ('id', 'date_joined')
-
-    def create(self, validated_data):
-        if 'password' in validated_data:
-            validated_data['password'] = make_password(validated_data['password'])
-        return super().create(validated_data)

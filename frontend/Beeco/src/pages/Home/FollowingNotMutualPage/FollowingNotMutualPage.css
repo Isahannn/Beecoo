@@ -1,0 +1,140 @@
+:root {
+  --color-text: #494538;
+  --color-muted: #adabb4;
+  --color-primary: #e0ef0e;
+  --color-background: #fffde8;
+  --color-input-bg: #fefeea;
+  --color-error: #dc3545;
+}
+
+.following-not-mutual-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  min-height: 100vh;
+  background: url('/images/Background.webp') no-repeat center center;
+  background-size: cover;
+  background-position: center;
+  padding: 40px 20px;
+}
+
+.following-not-mutual-page {
+  background: #ffffff;
+  border-radius: 30px;
+  width: 100%;
+  max-width: 800px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(240, 228, 83, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.following-not-mutual-page h1 {
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 24px;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.following-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.pagination-button {
+  width: 120px;
+  height: 40px;
+  background: var(--color-primary);
+  color: var(--color-text);
+  border: none;
+  border-radius: 8px;
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.pagination-button:hover {
+  background: #d6db13;
+}
+
+.pagination-button:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: var(--color-text);
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 14px;
+}
+
+.no-following {
+  color: var(--color-muted);
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 16px;
+  text-align: center;
+  margin: 24px 0;
+}
+
+.loading,
+.error-message {
+  color: var(--color-text);
+  font-family: "Euclid Circular A", "Poppins", sans-serif;
+  font-size: 18px;
+  text-align: center;
+  padding: 40px;
+}
+
+.error-message {
+  color: var(--color-error);
+  background-color: #fff0f0;
+  border-radius: 8px;
+}
+
+@media (max-width: 600px) {
+  .following-not-mutual-page-container {
+    padding: 20px 10px;
+  }
+
+  .following-not-mutual-page {
+    padding: 20px;
+    max-width: 95%;
+  }
+
+  .following-not-mutual-page h1 {
+    font-size: 20px;
+  }
+
+  .pagination-button {
+    width: 100px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+  }
+
+  .no-following {
+    font-size: 14px;
+  }
+
+  .loading,
+  .error-message {
+    font-size: 16px;
+    padding: 20px;
+  }
+}

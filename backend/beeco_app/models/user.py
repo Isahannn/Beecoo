@@ -1,3 +1,4 @@
+# beeco_app/models/user.py
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -34,7 +35,6 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, first_name, last_name, password, **extra_fields)
 
-
 class User(AbstractUser):
     username = None
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -43,6 +43,7 @@ class User(AbstractUser):
     last_name = models.CharField(_('last name'), max_length=100)
     date_of_birth = models.DateField(_('date of birth'), null=True, blank=True)
     avatar = models.ImageField(_('avatar'), upload_to='avatars/', null=True, blank=True, help_text=_('Profile picture'))
+    bio = models.TextField(_('bio'), blank=True, help_text=_('Short biography'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now, db_index=True)
     is_staff = models.BooleanField(_('staff status'), default=False, db_index=True)
     is_active = models.BooleanField(_('active'), default=True, db_index=True)

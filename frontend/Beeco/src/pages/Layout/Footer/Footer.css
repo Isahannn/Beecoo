@@ -1,5 +1,6 @@
-*{
-  margin: 0;
+
+.top-logo{
+    width: 20%;
 }
 .app {
   display: flex;
@@ -7,8 +8,7 @@
   min-height: 100vh;
 }
 .footer {
-
-  width: 100%;
+  margin-left:14%;
   background: #ffffff;
   display: flex;
   font-family: "Euclid Circular B", "Poppins", sans-serif;
@@ -31,17 +31,7 @@
   text-align: center;
 }
 
-.top-text h2 {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
 
-.top-text h3 {
-  font-size: 16px;
-  font-weight: 700;
-  opacity: 0.6;
-}
 
 .top button {
   border: 0;

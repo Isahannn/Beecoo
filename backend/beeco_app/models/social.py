@@ -1,6 +1,7 @@
 from django.db import models
 from .user import User
 
+
 class Follow(models.Model):
     follower = models.ForeignKey(
         User,

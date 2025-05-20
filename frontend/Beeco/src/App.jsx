@@ -10,9 +10,13 @@ import NotFound from './pages/ErrorPage/NotFound.jsx';
 import Home from './pages/Home/Home.jsx';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
+import ProfilePage from './pages/Profile/ProfilePage.jsx';
+import UsersPage from "./pages/ListUser/UserPage/UsersPage.jsx";
+import FriendsPage from "./pages/ListUser/FriendPage/FriendsPage.jsx";
 import Layout from './pages/Layout/Layout.jsx';
-import {Navbar} from "./pages/Layout/NavBar/NavBar.jsx";
-import Footer from "./pages/Layout/Footer/Footer.jsx";
+import { PostProvider } from './pages/Home/PostContext.jsx';
+import FollowingNotMutualPage from "./pages/Home/FollowingNotMutualPage/FollowingNotMutualPage.jsx";
+import { NotificationProvider } from './pages/Notification/NotificationContext.jsx';
 
 const router = createBrowserRouter([
   {
@@ -45,12 +49,43 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: '/user/:id',
+        element: (
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/users',
+        element: (
+          <ProtectedRoute>
+            <UsersPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/friends',
+        element: (
+          <ProtectedRoute>
+            <FriendsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/following',
+        element: (
+          <ProtectedRoute>
+            <FollowingNotMutualPage />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ]);
 
 function AppContent() {
-
   const { isAuthenticated } = useAuth();
 
   return (
@@ -66,9 +101,13 @@ function App() {
   return (
     <GoogleOAuthProvider clientId="604621430295-16qjcu4fjjbda1uc13kc5ufpjinr3ai4.apps.googleusercontent.com">
       <AuthProvider>
-        <React.StrictMode>
-        <AppContent />
-        </React.StrictMode>
+        <NotificationProvider>
+          <PostProvider>
+            <React.StrictMode>
+              <AppContent />
+            </React.StrictMode>
+          </PostProvider>
+        </NotificationProvider>
       </AuthProvider>
     </GoogleOAuthProvider>
   );

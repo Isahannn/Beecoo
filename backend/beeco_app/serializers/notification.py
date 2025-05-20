@@ -1,20 +1,11 @@
 from rest_framework import serializers
-from .auth import UserSerializer
 from ..models.notification import Notification
+from .auth import UserSerializer
 
 class NotificationSerializer(serializers.ModelSerializer):
-    actor = UserSerializer(read_only=True, source='sender')
-    target = serializers.SerializerMethodField()
+    sender = UserSerializer()
+    post_title = serializers.CharField(source='content_object.title', read_only=True, allow_null=True)
 
     class Meta:
         model = Notification
-        fields = [
-            'id', 'actor', 'target', 'verb',
-            'is_read', 'created_at'
-        ]
-        read_only_fields = fields
-
-    def get_target(self, obj):
-        if obj.content_object:
-            return str(obj.content_object)
-        return None
+        fields = ['id', 'sender', 'post_title', 'notification_type', 'action', 'created_at', 'is_read']

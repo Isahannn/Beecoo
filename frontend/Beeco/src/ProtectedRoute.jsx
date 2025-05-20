@@ -4,19 +4,11 @@ import { useAuth } from './Context/AutoContext.jsx';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  console.log('ProtectedRoute: loading=', loading, 'isAuthenticated=', isAuthenticated); // Отладка
 
-  if (loading) {
-    console.log('ProtectedRoute: Showing loading state'); // Отладка
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div style={{ textAlign: 'center', marginTop: '2rem' }}>Loading...</div>;
 
-  if (!isAuthenticated) {
-    console.log('ProtectedRoute: Redirecting to /login'); // Отладка
-    return <Navigate to="/login" replace />;
-  }
+  if (!loading && !isAuthenticated) return <Navigate to="/login" replace />;
 
-  console.log('ProtectedRoute: Rendering children'); // Отладка
   return children;
 };
 

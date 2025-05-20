@@ -12,30 +12,29 @@ function LogIn() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/'); // Redirect to Home page
+      navigate('/home');
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSubmit = async (email, password) => {
-    setError('');
-    setLoading(true);
+const handleSubmit = async (email, password) => {
+  setError('');
+  setLoading(true);
 
-    if (!email || !password) {
-      setError('Пожалуйста, введите email и пароль');
-      setLoading(false);
-      return;
-    }
-
-    const success = await login(email, password);
-    if (success) {
-      navigate('/');
-    } else {
-      setError('Неверный email или пароль');
-    }
-
+  if (!email || !password) {
+    setError('Пожалуйста, введите email и пароль');
     setLoading(false);
-  };
+    return;
+  }
 
+  const success = await login(email, password);
+  if (success) {
+    console.log('Login successful, waiting for state update');
+  } else {
+    setError('Неверный email или пароль');
+  }
+
+  setLoading(false);
+};
   return (
     <LoginForm
       onSubmit={handleSubmit}

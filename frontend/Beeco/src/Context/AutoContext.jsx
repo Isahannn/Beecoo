@@ -15,20 +15,31 @@ export function AuthProvider({ children }) {
         const token = localStorage.getItem('auth_token');
         const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
 
-        if (token && storedUser) {
-          const response = await axios.get('http://localhost:8000/user/me/', {
-            headers: { Authorization: `Token ${token}` },
-            timeout: 3000,
-          });
-          console.log('Проверка аутентификации: Успех', response.data);
-          setIsAuthenticated(true);
-          setUser(response.data);
-        } else {
-          throw new Error('Токен или пользователь отсутствуют');
+        console.log('checkAuth: token=', token, 'storedUser=', storedUser);
+
+        if (!token || !storedUser) {
+          throw new Error('Token or user missing');
         }
+
+        const response = await axios.get('http://localhost:8000/users/me/', {
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 3000,
+        });
+        console.log('checkAuth: /users/me/ response=', {
+          status: response.status,
+          data: response.data,
+        });
+        setIsAuthenticated(true);
+        setUser(response.data);
+        localStorage.setItem('user', JSON.stringify(response.data));
       } catch (error) {
-        console.error('Ошибка проверки аутентификации:', error.message, error.response?.data);
+        console.error('checkAuth error:', {
+          message: error.message,
+          status: error.response?.status,
+          data: error.response?.data,
+        });
         localStorage.removeItem('auth_token');
+        localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
         setIsAuthenticated(false);
         setUser(null);
@@ -42,24 +53,48 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('http://localhost:8000/login/', {
-        email,
-        password,
+      const response = await fetch('http://localhost:8000/api/token/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-      const { token, user } = response.data;
-      if (!token || !user) {
-        throw new Error('Недействительный ответ: отсутствует токен или пользователь');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Ошибка входа');
       }
-      localStorage.setItem('auth_token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      console.log('Вход: Сохранён токен:', token, 'пользователь:', user);
+      const data = await response.json();
+      console.log('Login response:', data);
+
+      localStorage.setItem('auth_token', data.access);
+      localStorage.setItem('refresh_token', data.refresh);
+
+      const userResponse = await fetch('http://localhost:8000/users/me/', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${data.access}`,
+        },
+      });
+      if (!userResponse.ok) {
+        const errorData = await userResponse.json();
+        throw new Error(errorData.detail || 'Не удалось получить данные пользователя');
+      }
+      const userData = await userResponse.json();
+      console.log('User data:', userData);
+
+      localStorage.setItem('user', JSON.stringify(userData));
       setIsAuthenticated(true);
-      setUser(user);
+      setUser(userData);
+
       return true;
-    } catch (e) {
-      console.error('Ошибка входа:', e.message, e.response?.data);
+    } catch (error) {
+      console.error('Login failed:', error.message);
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('refresh_token');
       localStorage.removeItem('user');
+      setIsAuthenticated(false);
+      setUser(null);
       return false;
     }
   };
@@ -70,18 +105,18 @@ export function AuthProvider({ children }) {
         email,
         password,
       });
-      const { token, user } = response.data;
-      if (!token || !user) {
-        throw new Error('Недействительный ответ: отсутствует токен или пользователь');
+      const { access, user } = response.data;
+      if (!access || !user) {
+        throw new Error('Invalid registration response: missing token or user');
       }
-      localStorage.setItem('auth_token', token);
+      localStorage.setItem('auth_token', access);
       localStorage.setItem('user', JSON.stringify(user));
-      console.log('Регистрация: Сохранён токен:', token, 'пользователь:', user);
+      console.log('Registration: Saved token:', access, 'user:', user);
       setIsAuthenticated(true);
       setUser(user);
       return true;
-    } catch (e) {
-      console.error('Ошибка регистрации:', e.message, e.response?.data);
+    } catch (error) {
+      console.error('Registration error:', error.message, error.response?.data);
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
       return false;
@@ -90,13 +125,18 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     setIsAuthenticated(false);
     setUser(null);
   };
 
+  const getToken = () => localStorage.getItem('auth_token');
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, loading, login, logout, registration }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, loading, login, logout, registration, getToken }}
+    >
       {children}
     </AuthContext.Provider>
   );
